@@ -27,6 +27,29 @@ class UserController {
 
     res.json(id);
   }
+
+  // TODO: add implementation for lastname, firstname, password update
+  static async update(req, res, next) {
+    try {
+      const user = req.body;
+
+      if (!user.id) {
+        throw Error("ID not provided");
+      }
+
+      let picture = null;
+      if (req.files !== null) {
+        picture = req.files.picture;
+      }
+
+      if (picture !== null) {
+        await UserService.updateById({ user, picture });
+      }
+      res.json({ message: "Successfully updated" });
+    } catch (error) {
+      return next(ApiError.internalServerError(error));
+    }
+  }
 }
 
 export default UserController;
