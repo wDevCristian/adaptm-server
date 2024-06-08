@@ -9,8 +9,13 @@ class UserService {
     return newUser;
   }
 
+  static async getById(id) {
+    const userFound = await User.findByPk(+id);
+    return userFound;
+  }
+
   static async updateById({ user, picture }) {
-    const userFound = await User.findByPk(+user.id);
+    const userFound = await this.getById(+user.id);
     const oldPictureName = userFound.picture;
 
     if (oldPictureName !== null) {

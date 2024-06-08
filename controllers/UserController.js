@@ -7,13 +7,27 @@ class UserController {
       const result = await UserService.register(req.body);
       res.json(result);
     } catch (error) {
-      // return next(ApiError.badRequest(error.message));
-      res.status(500).json(error.errors.map((i) => i.message));
+      return next(ApiError.badRequest(error.errors.map((i) => i.message)));
     }
   }
 
   static async login(req, res) {
     res.json({ message: "Successfully received..." });
+  }
+
+  static async getById(req, res, next) {
+    try {
+      const id = req.params.id;
+
+      if (!id) {
+        throw Error("ID not provided");
+      }
+
+      const user = await UserService.getById(id);
+      res.json(user);
+    } catch (error) {
+      next(ApiError.badRequest("ID not provided"));
+    }
   }
 
   static async check(req, res, next) {

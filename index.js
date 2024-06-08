@@ -54,11 +54,3 @@ startApplication();
 // User:
 // 1.update (maybe later if I will have time to realize the user settings)
 // 2. getById (maybe later if I will have time to realize the user settings)
-
-// ______________________________________-
-
-// create a separate repository on github.com and push the server side of the app
-// delete and untrack the files of the backend on the frontend repository
-
-// Static implementation for picture sending
-// -- implement static
