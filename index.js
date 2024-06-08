@@ -1,6 +1,7 @@
 import express from "express";
 import sequelize from "./db.js";
 import cors from "cors";
+import fileUpload from "express-fileupload";
 import router from "./routes/index.js";
 import { errorHandlingMiddleware } from "./middleware/errorHandlingMiddleware.js";
 
@@ -14,6 +15,8 @@ const PORT = process.env.PORT || 5000;
 const app = express();
 app.use(cors());
 app.use(express.json());
+app.use(express.static("./static"));
+app.use(fileUpload({}));
 app.use("/api", router);
 // app.use(express.static("./static"));
 // app.use(fileUpload());
@@ -56,3 +59,6 @@ startApplication();
 
 // create a separate repository on github.com and push the server side of the app
 // delete and untrack the files of the backend on the frontend repository
+
+// Static implementation for picture sending
+// -- implement static

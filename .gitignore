@@ -1,3 +1,4 @@
-/.env
-testing/*
-node_modules/*
+.env
+testing/
+node_modules/
+static/
