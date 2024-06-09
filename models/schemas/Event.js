@@ -42,7 +42,6 @@ const Event = sequelize.define("event", {
   },
   addressNr: {
     type: DataTypes.STRING,
-    allowNull: false,
   },
   street: {
     type: DataTypes.STRING,
@@ -53,11 +52,11 @@ const Event = sequelize.define("event", {
     allowNull: false,
   },
   latitude: {
-    type: DataTypes.DOUBLE,
+    type: DataTypes.STRING(32),
     allowNull: false,
   },
   longitude: {
-    type: DataTypes.DOUBLE,
+    type: DataTypes.STRING(32),
     allowNull: false,
   },
 });
