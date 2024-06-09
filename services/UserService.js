@@ -10,7 +10,7 @@ class UserService {
   }
 
   static async getById(id) {
-    const userFound = await User.findByPk(+id);
+    const userFound = await User.findByPk(id);
     return userFound;
   }
 
