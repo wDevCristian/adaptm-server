@@ -1,12 +1,24 @@
+import ApiError from "../error/apiError.js";
 import EventService from "../services/EventService.js";
 
 class EventController {
-  static async create(req, res) {
+  static async create(req, res, next) {
     try {
-      const result = await EventService.create(req.body);
-      res.json(result);
+      let picture = req?.files?.picture || null;
+      let textDate = req.body;
+      let result;
+
+      if (picture === null) {
+        result = await EventService.create({ ...textDate });
+      } else {
+        result = await EventService.create({ picture, ...textDate });
+      }
+
+      res.json({ message: "Event created successfully", result });
     } catch (error) {
+      console.log(error.message);
       res.status(500).json(error);
+      // return next(ApiError.badRequest(error));
     }
   }
   static async getAll(req, res) {
