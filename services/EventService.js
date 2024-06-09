@@ -69,15 +69,15 @@ class EventService {
       description,
       startDateTime,
       endDateTime,
-      picture,
+      picture = null,
       type,
       maxNrOfParticipants,
       latitude,
       longitude,
       street,
       city,
-      building,
-      addressNr,
+      building = null,
+      addressNr = null,
     } = dataObject;
 
     // update fields, except picture and type fields
@@ -107,7 +107,7 @@ class EventService {
     // if existing picture and deleted the existed one => delete the picture
     if (event.picture && !picture) {
       FileService.deletePicture(event.picture, TYPE);
-      event.picture = null;
+      event.picture = picture;
     }
 
     // if not existing picture and uploaded a new one => upload the new
