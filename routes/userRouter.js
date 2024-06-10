@@ -1,9 +1,10 @@
 import { Router } from "express";
 import UserController from "../controllers/UserController.js";
+import authMiddleware from "../middleware/authMiddleware.js";
 
 const router = new Router();
 
-router.get("/auth", UserController.check);
+router.get("/auth", authMiddleware, UserController.check);
 router.post("/register", UserController.register);
 router.post("/login", UserController.login);
 router.put("/update", UserController.update);
