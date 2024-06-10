@@ -82,15 +82,12 @@ class UserController {
   }
 
   static async check(req, res, next) {
-    const { id } = req.query;
-    const params = req.params;
-    console.log(params);
+    const token = UserService.generateToken({
+      id: req.user.id,
+      email: req.user.email,
+    });
 
-    if (!id) {
-      return next(ApiError.badRequest("Not provided id"));
-    }
-
-    res.json(id);
+    res.json({ token });
   }
 
   // TODO: add implementation for lastname, firstname, password update
