@@ -4,15 +4,66 @@ import UserService from "../services/UserService.js";
 class UserController {
   static async register(req, res, next) {
     try {
-      const result = await UserService.register(req.body);
-      res.json(result);
+      const { email, password, firstname, lastname } = req.body;
+
+      // TODO: in-depth validation
+      // check if email is provided
+      if (!email) {
+        return next(ApiError.badRequest("Email not provided"));
+      }
+      // check if password is provided
+      if (!password) {
+        return next(ApiError.badRequest("Password not provided"));
+      }
+      // check if  is provided
+      if (!firstname) {
+        return next(ApiError.badRequest("Firstname not provided"));
+      }
+      // check if  is provided
+      if (!lastname) {
+        return next(ApiError.badRequest("Lastname not provided"));
+      }
+
+      // check if user exists
+      const candidate = await UserService.getByEmail(email);
+      if (candidate) {
+        return next(ApiError.badRequest("User already exists"));
+      }
+
+      const resObj = await UserService.register({
+        email,
+        password,
+        firstname,
+        lastname,
+      });
+
+      res.json(resObj);
     } catch (error) {
-      return next(ApiError.badRequest(error.errors.map((i) => i.message)));
+      console.log(error);
+      return next(ApiError.internalServerError(error));
     }
   }
 
-  static async login(req, res) {
-    res.json({ message: "Successfully received..." });
+  static async login(req, res, next) {
+    try {
+      const { email, password } = req.body;
+
+      // check if email is provided
+      if (!email) {
+        return next(ApiError.badRequest("Email not provided"));
+      }
+
+      // check if password is provided
+      if (!password) {
+        return next(ApiError.badRequest("Password not provided"));
+      }
+
+      const resObj = await UserService.login({ email, password });
+
+      res.json(resObj);
+    } catch (error) {
+      return next(ApiError.unauthorized(error));
+    }
   }
 
   static async getById(req, res, next) {
