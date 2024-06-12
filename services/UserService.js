@@ -23,7 +23,10 @@ class UserService {
 
     const payload = {
       id: newUser.id,
+      firstname: newUser.firstname,
+      lastname: newUser.lastname,
       email: newUser.email,
+      picture: newUser.picture,
     };
 
     const token = UserService.generateToken(payload);
@@ -49,7 +52,10 @@ class UserService {
 
     const payload = {
       id: userFound.id,
+      firstname: userFound.firstname,
+      lastname: userFound.lastname,
       email: userFound.email,
+      picture: userFound.picture,
     };
 
     const token = UserService.generateToken(payload);
@@ -61,7 +67,13 @@ class UserService {
     console.log(payload);
 
     const token = jwt.sign(
-      { id: payload.id, email: payload.email },
+      {
+        id: payload.id,
+        firstname: payload.firstname,
+        lastname: payload.lastname,
+        email: payload.email,
+        picture: payload.picture,
+      },
       process.env.JWT_CRYPTO_KEY,
       { expiresIn: "1h" }
     );

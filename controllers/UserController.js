@@ -4,6 +4,8 @@ import UserService from "../services/UserService.js";
 class UserController {
   static async register(req, res, next) {
     try {
+      console.log(req.body);
+
       const { email, password, firstname, lastname } = req.body;
 
       // TODO: in-depth validation
@@ -46,6 +48,7 @@ class UserController {
 
   static async login(req, res, next) {
     try {
+      console.log(req.body);
       const { email, password } = req.body;
 
       // check if email is provided
@@ -85,6 +88,9 @@ class UserController {
     const token = UserService.generateToken({
       id: req.user.id,
       email: req.user.email,
+      firstname: req.user.firstname,
+      lastname: req.user.lastname,
+      picture: req.user.picture,
     });
 
     res.json({ token });
