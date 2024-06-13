@@ -1,5 +1,6 @@
 import ApiError from "../error/apiError.js";
 import EventService from "../services/EventService.js";
+import EventUserService from "../services/EventUserService.js";
 
 class EventController {
   static async create(req, res, next) {
@@ -28,10 +29,11 @@ class EventController {
       page = page || 1;
       let offset = (page - 1) * limit;
 
-      const result = await EventService.getAll({ limit, offset });
+      const result = await EventUserService.getAll({ limit, offset });
 
       res.json(result);
     } catch (error) {
+      console.log(error);
       res.status(500).json(error);
     }
   }
