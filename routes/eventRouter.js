@@ -5,6 +5,11 @@ import authMiddleware from "../middleware/authMiddleware.js";
 const router = new Router();
 
 router.get("/all", EventController.getAll);
+router.get(
+  "/all/:organizerId",
+  authMiddleware,
+  EventController.getAllByOrganizerId
+);
 router.get("/:id", EventController.getById);
 router.put("/update", authMiddleware, EventController.update);
 router.post("/create", authMiddleware, EventController.create);

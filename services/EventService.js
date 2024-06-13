@@ -1,6 +1,7 @@
 import Event from "../models/schemas/Event.js";
 import EventType from "../models/schemas/EventType.js";
 import FileService from "./FileService.js";
+import { Op } from "sequelize";
 
 const TYPE = "events";
 
@@ -10,7 +11,10 @@ class EventService {
 
     console.log(dataObject);
 
-    const { type, ...eventObject } = dataObject;
+    let { type, ...eventObject } = dataObject;
+
+    type = Array.isArray(type) ? type : [type];
+
     let pictureName;
 
     if (eventObject.picture) {
@@ -36,6 +40,22 @@ class EventService {
 
   static async getAll(params) {
     const result = await Event.findAll(params);
+    return result;
+  }
+
+  static async getAllByOrganizerId(organizerId) {
+    const result = await Event.findAll({
+      where: {
+        organizerId,
+        startDateTime: {
+          [Op.gte]: new Date(),
+        },
+      },
+      order: [["startDateTime", "ASC"]],
+    });
+
+    console.log(result);
+
     return result;
   }
 

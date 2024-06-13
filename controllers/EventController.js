@@ -38,8 +38,36 @@ class EventController {
     }
   }
 
-  static async getById(req, res) {
-    res.json({ message: "Successfully send event by ID..." });
+  static async getAllByOrganizerId(req, res) {
+    try {
+      const organizerId = req.params.organizerId;
+
+      if (!organizerId) {
+        return next(ApiError.badRequest("Organizer ID not provided"));
+      }
+
+      const result = await EventService.getAllByOrganizerId(organizerId);
+      res.json(result);
+    } catch (error) {
+      console.log(error);
+      res.status(500).json(error);
+    }
+  }
+
+  static async getById(req, res, next) {
+    try {
+      const { id } = req.params;
+
+      if (!id) {
+        return next(ApiError.badRequest("Not provided ID"));
+      }
+
+      const result = await EventUserService.getEventDetailsById(id);
+      res.json(result);
+    } catch (error) {
+      console.log(error);
+      return next(ApiError.internalServerError(error));
+    }
   }
 
   static async deleteById(req, res) {
