@@ -77,7 +77,7 @@ class UserController {
         throw Error("ID not provided");
       }
 
-      const user = await UserService.getById(id);
+      const user = await UserService.getOrganizerFullnameById(id);
       res.json(user);
     } catch (error) {
       next(ApiError.badRequest("ID not provided"));
