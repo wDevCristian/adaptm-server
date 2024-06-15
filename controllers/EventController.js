@@ -22,6 +22,49 @@ class EventController {
       // return next(ApiError.badRequest(error));
     }
   }
+
+  static async createSavedEvent(req, res, next) {
+    try {
+      const reqBody = req.body || {};
+
+      console.log(reqBody);
+
+      if (!reqBody.userId || !reqBody.eventId) {
+        return next(
+          ApiError.badRequest({
+            isCreated: false,
+            message: "Data missing from request body.",
+          })
+        );
+      }
+
+      await EventUserService.createSavedEvent(reqBody.userId, reqBody.eventId);
+
+      res.json({ isCreated: true });
+    } catch (error) {
+      console.log(error);
+      return next(
+        ApiError.badRequest({ isCreated: false, message: error.message })
+      );
+    }
+  }
+
+  static async getById(req, res, next) {
+    try {
+      const { id } = req.params;
+
+      if (!id) {
+        return next(ApiError.badRequest("Not provided ID"));
+      }
+
+      const result = await EventUserService.getEventDetailsById(id);
+      res.json(result);
+    } catch (error) {
+      console.log(error);
+      return next(ApiError.internalServerError(error));
+    }
+  }
+
   static async getAll(req, res) {
     try {
       let { limit, page } = req.query;
@@ -50,28 +93,24 @@ class EventController {
       res.json(result);
     } catch (error) {
       console.log(error);
-      res.status(500).json(error);
+      res.status(500).json(error.message);
     }
   }
 
-  static async getById(req, res, next) {
+  static async getSavedEventsByUserId(req, res, next) {
     try {
-      const { id } = req.params;
+      const userId = req.params.userId;
 
-      if (!id) {
-        return next(ApiError.badRequest("Not provided ID"));
+      if (!userId) {
+        return next(ApiError.badRequest("User ID not provided"));
       }
 
-      const result = await EventUserService.getEventDetailsById(id);
+      const result = await EventUserService.getSavedEventsByUserId(userId);
       res.json(result);
     } catch (error) {
       console.log(error);
       return next(ApiError.internalServerError(error));
     }
-  }
-
-  static async deleteById(req, res) {
-    res.json({ message: "Successfully deleted..." });
   }
 
   static async update(req, res, next) {
@@ -98,6 +137,35 @@ class EventController {
     } catch (error) {
       console.log(error);
       return next(ApiError.internalServerError(error.message));
+    }
+  }
+
+  static async deleteById(req, res) {
+    res.json({ message: "Successfully deleted..." });
+  }
+
+  static async deleteSavedEvent(req, res, next) {
+    try {
+      const { userId, eventId } = req.query;
+
+      if (!userId || !eventId) {
+        return next(ApiError.badRequest("UserId or eventId not provided"));
+      }
+
+      const result = await EventUserService.deleteSavedEvent({
+        userId,
+        eventId,
+      });
+
+      res.json({ isDeleted: Boolean(result) });
+    } catch (error) {
+      console.log(error);
+      return next(
+        ApiError.internalServerError({
+          isDeleted: false,
+          message: error.message,
+        })
+      );
     }
   }
 }

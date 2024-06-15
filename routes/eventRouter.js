@@ -11,8 +11,15 @@ router.get(
   EventController.getAllByOrganizerId
 );
 router.get("/:id", EventController.getById);
+router.get(
+  "/saved/:userId",
+  authMiddleware,
+  EventController.getSavedEventsByUserId
+);
+router.post("/saved", EventController.createSavedEvent);
 router.put("/update", authMiddleware, EventController.update);
 router.post("/create", authMiddleware, EventController.create);
-router.post("/delete/:id", EventController.deleteById); // TODO: eliminate this functionality
+router.delete("/saved", authMiddleware, EventController.deleteSavedEvent);
+router.delete("/delete/:id", EventController.deleteById); // TODO: eliminate this functionality
 
 export { router };

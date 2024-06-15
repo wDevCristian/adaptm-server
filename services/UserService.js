@@ -88,7 +88,11 @@ class UserService {
 
   static async getOrganizerFullnameById(id) {
     const userFound = await User.findByPk(id);
-    return { firstname: userFound.firstname, lastname: userFound.lastname };
+    return {
+      id: userFound.id,
+      firstname: userFound.firstname,
+      lastname: userFound.lastname,
+    };
   }
 
   static async updateById({ user, picture }) {
