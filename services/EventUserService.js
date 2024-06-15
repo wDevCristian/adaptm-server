@@ -4,6 +4,7 @@ import EventType from "../models/schemas/EventType.js";
 import { Op } from "sequelize";
 import sequelize from "../db.js";
 import UserService from "./UserService.js";
+import EventService from "./EventService.js";
 
 class EventUserService {
   static async createSavedEvent(userId, eventId) {
@@ -13,13 +14,48 @@ class EventUserService {
     });
   }
 
+  static async createAttendee(userId, eventId) {
+    await sequelize.models.user_participate_event.create({
+      userId,
+      eventId,
+    });
+  }
+
+  static async getAllAttendees(userId) {
+    const events = await sequelize.models.user_participate_event.findAll({
+      where: {
+        userId,
+      },
+    });
+
+    let resArr = [];
+
+    for (let i = 0; i < events.length; i++) {
+      const event = await EventService.getById(events[i].eventId);
+      const participants = await this.getParticipantsToEventByEventId(
+        events[i].eventId
+      );
+      const userData = await UserService.getOrganizerFullnameById(
+        event.organizerId
+      );
+
+      resArr.push({
+        ...event.dataValues,
+        participants,
+        user: userData,
+      });
+    }
+
+    return resArr;
+  }
+
   static async getSavedEventsByUserId(userId) {
     const resultEvents = await this._getEventsSavedByUserDbObject(userId);
     const savedEvents = resultEvents[0].events;
     let result = [];
 
     for (let i = 0; i < savedEvents.length; i++) {
-      let val = await this._getParticipantsToEventByEventId(savedEvents[i].id);
+      let val = await this.getParticipantsToEventByEventId(savedEvents[i].id);
       let userData = await UserService.getOrganizerFullnameById(
         savedEvents[i].organizerId
       );
@@ -66,7 +102,15 @@ class EventUserService {
       offset,
     });
 
-    return events;
+    let resArr = [];
+
+    for (let i = 0; i < events.length; i++) {
+      const participants =
+        await EventUserService.getParticipantsToEventByEventId(events[i].id);
+      resArr.push({ ...events[i].dataValues, participants });
+    }
+
+    return resArr;
   }
 
   static async getEventDetailsById(id) {
@@ -82,7 +126,7 @@ class EventUserService {
     const eventType = await this.__getEventTypesByEventId(event.id);
     const typesArr = eventType.map((i) => i.type);
 
-    const participants = await this._getParticipantsToEventByEventId(event.id);
+    const participants = await this.getParticipantsToEventByEventId(event.id);
 
     return {
       ...event.dataValues,
@@ -98,8 +142,15 @@ class EventUserService {
 
     return result;
   }
+  static async deleteAttendee(body) {
+    const result = await sequelize.models.user_participate_event.destroy({
+      where: { userId: body.userId, eventId: body.eventId },
+    });
 
-  static async _getParticipantsToEventByEventId(eventId) {
+    return result;
+  }
+
+  static async getParticipantsToEventByEventId(eventId) {
     const userParticipateEvent =
       await sequelize.models.user_participate_event.count({
         where: {

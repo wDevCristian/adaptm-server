@@ -16,10 +16,17 @@ router.get(
   authMiddleware,
   EventController.getSavedEventsByUserId
 );
+router.get(
+  "/attendees/:userId",
+  authMiddleware,
+  EventController.getAllAttendees
+);
+router.post("/attendees", authMiddleware, EventController.createAttendee);
 router.post("/saved", EventController.createSavedEvent);
-router.put("/update", authMiddleware, EventController.update);
 router.post("/create", authMiddleware, EventController.create);
+router.put("/update", authMiddleware, EventController.update);
 router.delete("/saved", authMiddleware, EventController.deleteSavedEvent);
+router.delete("/attendees", authMiddleware, EventController.deleteAttendee);
 router.delete("/delete/:id", EventController.deleteById); // TODO: eliminate this functionality
 
 export { router };

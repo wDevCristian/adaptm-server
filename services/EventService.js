@@ -2,6 +2,7 @@ import Event from "../models/schemas/Event.js";
 import EventType from "../models/schemas/EventType.js";
 import FileService from "./FileService.js";
 import { Op } from "sequelize";
+import EventUserService from "./EventUserService.js";
 
 const TYPE = "events";
 
@@ -35,6 +36,12 @@ class EventService {
 
   static async count() {
     const result = await Event.count();
+    return result;
+  }
+
+  static async getById(id) {
+    const result = await Event.findByPk(id);
+
     return result;
   }
 

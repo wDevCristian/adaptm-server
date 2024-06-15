@@ -49,6 +49,48 @@ class EventController {
     }
   }
 
+  static async createAttendee(req, res, next) {
+    try {
+      const reqBody = req.body || {};
+
+      console.log(reqBody);
+
+      if (!reqBody.userId || !reqBody.eventId) {
+        return next(
+          ApiError.badRequest({
+            isCreated: false,
+            message: "Data missing from request body.",
+          })
+        );
+      }
+
+      await EventUserService.createAttendee(reqBody.userId, reqBody.eventId);
+
+      res.json({ isCreated: true });
+    } catch (error) {
+      console.log(error);
+      return next(
+        ApiError.badRequest({ isCreated: false, message: error.message })
+      );
+    }
+  }
+
+  static async getAllAttendees(req, res, next) {
+    try {
+      const userId = req.params.userId;
+
+      if (!userId) {
+        return next(ApiError.badRequest("User ID not provided"));
+      }
+
+      const result = await EventUserService.getAllAttendees(userId);
+      res.json(result);
+    } catch (error) {
+      console.log(error);
+      return next(ApiError.internalServerError(error));
+    }
+  }
+
   static async getById(req, res, next) {
     try {
       const { id } = req.params;
@@ -153,6 +195,31 @@ class EventController {
       }
 
       const result = await EventUserService.deleteSavedEvent({
+        userId,
+        eventId,
+      });
+
+      res.json({ isDeleted: Boolean(result) });
+    } catch (error) {
+      console.log(error);
+      return next(
+        ApiError.internalServerError({
+          isDeleted: false,
+          message: error.message,
+        })
+      );
+    }
+  }
+
+  static async deleteAttendee(req, res, next) {
+    try {
+      const { userId, eventId } = req.query;
+
+      if (!userId || !eventId) {
+        return next(ApiError.badRequest("UserId or eventId not provided"));
+      }
+
+      const result = await EventUserService.deleteAttendee({
         userId,
         eventId,
       });
