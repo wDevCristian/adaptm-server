@@ -54,16 +54,19 @@ class EventService {
     const result = await Event.findAll({
       where: {
         organizerId,
-        startDateTime: {
-          [Op.gte]: new Date(),
-        },
       },
-      order: [["startDateTime", "ASC"]],
+      order: [["updatedAt", "DESC"]],
     });
 
-    console.log(result);
+    let resArr = [];
 
-    return result;
+    for (let i = 0; i < result.length; i++) {
+      const participants =
+        await EventUserService.getParticipantsToEventByEventId(result[i].id);
+      resArr.push({ ...result[i].dataValues, participants });
+    }
+
+    return resArr;
   }
 
   /**
@@ -126,9 +129,11 @@ class EventService {
     // update picture logic
     // If existing picture and uploaded a new one => delete the old picture and upload the new
     if (event.picture && picture) {
-      FileService.deletePicture(event.picture, TYPE);
-      pictureName = FileService.savePicture(picture, TYPE);
-      event.picture = pictureName;
+      if (event.picture !== picture) {
+        FileService.deletePicture(event.picture, TYPE);
+        const pictureName = FileService.savePicture(picture, TYPE);
+        event.picture = pictureName;
+      }
     }
 
     // if existing picture and deleted the existed one => delete the picture
@@ -139,7 +144,7 @@ class EventService {
 
     // if not existing picture and uploaded a new one => upload the new
     if (!event.picture && picture) {
-      pictureName = FileService.savePicture(picture, TYPE);
+      const pictureName = FileService.savePicture(picture, TYPE);
       event.picture = pictureName;
     }
 
